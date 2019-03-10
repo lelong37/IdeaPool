@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace IdeaPool.Domain.Models
 {
     public partial class User
     {
-        [NotMapped]
-        public string Password { get; set; }
-
-        [NotMapped]
-        public string Token { get; set; }
+        [JsonIgnore]
+        public byte[] Hash { get; set; }
+        [JsonIgnore]
+        public byte[] Salt { get; set; }
     }
 }

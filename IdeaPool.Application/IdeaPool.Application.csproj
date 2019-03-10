@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Ideas\Commands\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

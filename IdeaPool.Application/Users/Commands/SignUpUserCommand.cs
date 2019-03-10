@@ -7,7 +7,7 @@ using MediatR;
 
 namespace IdeaPool.Application.Users.Commands
 {
-    public class CreateUserCommand: IRequest<User>
+    public class SignUpUserCommand: IRequest<User>
     {
         public string Email { get; set; }
         public string First { get; set; }

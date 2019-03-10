@@ -47,8 +47,8 @@ namespace IdeaPool.Api
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action=Get}/{id?}",
-                    defaults: );
+                    template: "api/{controller}/{id?}",
+                    defaults: new { controller="Ideas", action="Get" });
             });
         }
 
@@ -111,7 +111,8 @@ namespace IdeaPool.Api
             });
 
             services.AddScoped<IUserService, UserService>();
-            services.AddMediatR(typeof(CreateUserCommand).GetTypeInfo().Assembly);
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddMediatR(typeof(SignUpUserCommand).GetTypeInfo().Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
         }

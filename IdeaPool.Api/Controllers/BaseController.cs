@@ -1,22 +1,24 @@
-﻿using IdeaPool.Domain.Models;
+﻿#region
+
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+#endregion
+
 namespace IdeaPool.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public abstract class BaseController : ControllerBase
+    public abstract class BaseController: ControllerBase
     {
-        protected BaseController(DbContext dataContext)
-        {
-            dataContext.Database.EnsureCreated();
-        }
-
         private IMediator _mediator;
 
-        protected IMediator Mediator => _mediator ?? (_mediator = HttpContext.RequestServices.GetService<IMediator>());
+        protected BaseController(DbContext dataContext) 
+            => dataContext.Database.EnsureCreated();
+
+        protected IMediator Mediator 
+            => _mediator ?? (_mediator = HttpContext.RequestServices.GetService<IMediator>());
     }
 }

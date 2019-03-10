@@ -11,16 +11,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdeaPool.Api.Controllers
 {
-    public class IdeaController: BaseController
+    public class IdeasController: BaseController
     {
         private readonly IdeaPoolContext _context;
 
-        public IdeaController(IdeaPoolContext context): base(context) 
+        public IdeasController(IdeaPoolContext context): base(context) 
             => _context = context;
 
         // DELETE: api/Idea/5
         [HttpDelete]
-        public async Task<ActionResult<Idea>> DeleteIdea(int id)
+        public async Task<ActionResult<Idea>> Delete(int id)
         {
             var idea = await _context.Idea.FindAsync(id);
             if(idea == null) return NotFound();
@@ -33,12 +33,12 @@ namespace IdeaPool.Api.Controllers
 
         // GET: api/Idea
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Idea>>> GetIdea() 
+        public async Task<ActionResult<IEnumerable<Idea>>> Get() 
             => await _context.Idea.ToListAsync();
 
         // GET: api/Idea/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Idea>> GetIdea(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Idea>> Get(int id)
         {
             var idea = await _context.Idea.FindAsync(id);
 
@@ -52,17 +52,17 @@ namespace IdeaPool.Api.Controllers
 
         // POST: api/Idea
         [HttpPost]
-        public async Task<ActionResult<Idea>> PostIdea(Idea idea)
+        public async Task<ActionResult<Idea>> Post(Idea idea)
         {
             _context.Idea.Add(idea);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetIdea", new { id = idea.Id }, idea);
+            return CreatedAtAction("Get", new { id = idea.Id }, idea);
         }
 
         // PUT: api/Idea/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> PutIdea(int id, Idea idea)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Put(int id, Idea idea)
         {
             if(id != idea.Id) return BadRequest();
 

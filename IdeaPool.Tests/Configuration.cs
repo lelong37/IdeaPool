@@ -14,7 +14,7 @@ namespace IdeaPool.Tests
         public static IConfigurationRoot GetConfigurationRoot(string outputPath)
         {
             var configurationRoot = new ConfigurationBuilder()
-                .SetBasePath(outputPath)
+                //.SetBasePath(outputPath)
                 .AddJsonFile("appsettings.json", true)
                 .Build();
 

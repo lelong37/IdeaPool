@@ -18,20 +18,7 @@ namespace IdeaPool.Application.Users.Queries
         public GetUsersQueryHandler(IdeaPoolContext dataContext) 
             => _dataContext = dataContext;
 
-        public async Task<IEnumerable<User>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
-        {
-            var users = await _dataContext
-                .User
-                .ToListAsync(cancellationToken);
-
-            //users.ForEach(x =>
-            //{
-            //    x.Hash = null;
-            //    x.Salt = null;
-            //    x.Password = null;
-            //});
-
-            return users;
-        }
+        public async Task<IEnumerable<User>> Handle(GetUsersQuery request, CancellationToken cancellationToken) 
+            => await _dataContext.User.ToListAsync(cancellationToken);
     }
 }

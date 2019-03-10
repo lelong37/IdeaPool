@@ -9,23 +9,26 @@ using IdeaPool.Application.Exceptions;
 using IdeaPool.Domain.Models;
 using IdeaPool.Services;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 #endregion
 
 namespace IdeaPool.Application.Users.Commands
 {
-    public class CreateUserCommandHandler: IRequestHandler<CreateUserCommand, User>
+    public class SignUpUserCommandHandler: IRequestHandler<SignUpUserCommand, User>
     {
         private readonly IdeaPoolContext _dataContext;
         private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public CreateUserCommandHandler(IdeaPoolContext dataContext, IUserService userService)
+        public SignUpUserCommandHandler(IdeaPoolContext dataContext, IUserService userService, IMediator mediator)
         {
             _dataContext = dataContext;
             _userService = userService;
+            _mediator = mediator;
         }
 
-        public async Task<User> Handle(CreateUserCommand command, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<User> Handle(SignUpUserCommand command, CancellationToken cancellationToken = default(CancellationToken))
         {
             if(string.IsNullOrWhiteSpace(command.Password))
                 throw new AppException("Password is required");
@@ -37,22 +40,26 @@ namespace IdeaPool.Application.Users.Commands
 
             var user = new User
             {
+                First = command.First,
+                Last = command.Last,
                 Email = command.Email,
                 Hash = passwordHash,
                 Salt = passwordSalt
             };
 
             _dataContext.User.Add(user);
+            
+            await _dataContext.SaveChangesAsync(cancellationToken);
 
-            try
+            var loginUserCommand = new LoginUserCommand
             {
-                await _dataContext.SaveChangesAsync(cancellationToken);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+                Email = command.Email,
+                Password = command.Password,
+            };
+
+            user = await _mediator.Send(loginUserCommand, cancellationToken);
+
+            await _dataContext.SaveChangesAsync(cancellationToken);
 
             return user;
         }

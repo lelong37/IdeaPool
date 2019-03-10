@@ -2,10 +2,18 @@
 
 using System;
 using System.IO;
+using System.Reflection;
+using IdeaPool.Application.Infrastructure;
+using IdeaPool.Application.Users.Commands;
+using IdeaPool.Domain.Infrastructure;
 using IdeaPool.Domain.Models;
+using IdeaPool.Services;
+using MediatR;
+using MediatR.Pipeline;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 #endregion
@@ -15,43 +23,56 @@ namespace IdeaPool.Tests
     [Collection(nameof(IdeaPoolContext))]
     public class IdeaPoolContextTextFixture
     {
-        private IdeaPoolContext _context;
-
-        public IdeaPoolContext Context
+        public ServiceCollection ServiceCollection
         {
             get
             {
-                if(_context == null)
+                if (_services == null)
                     throw new InvalidOperationException("You must first call Initialize before getting the context.");
-                return _context;
+                return _services;
             }
         }
 
+        private ServiceCollection _services;
+
         public void Initialize(bool useInMemory = true, Action seedData = null)
         {
+            _services = new ServiceCollection();
+
             var configuration = Configuration.GetConfigurationRoot(Directory.GetCurrentDirectory());
 
-            DbContextOptions<IdeaPoolContext> options;
+            var appSettingsSection = configuration.GetSection("AppSettings");
+            var settings = appSettingsSection.Get<AppSettings>();
 
-            if(useInMemory)
+            _services.Configure<AppSettings>(appSettingsSection);
+
+            _services.AddDbContext<IdeaPoolContext>(options =>
             {
-                var connection = new SqliteConnection(configuration.GetConnectionString("IdeaPoolContextInMemory"));
-                connection.Open();
+                string connectionString;
 
-                options = new DbContextOptionsBuilder<IdeaPoolContext>()
-                    .UseSqlite(connection)
-                    .Options;
-            }
-            else
-            {
-                options = new DbContextOptionsBuilder<IdeaPoolContext>()
-                    .UseSqlServer(configuration.GetConnectionString("IdeaPoolContextSqlServer"))
-                    .Options;
-            }
+                if (!settings.UseInMemoryDatabase.GetValueOrDefault(false))
+                {
+                    connectionString = configuration.GetConnectionString("IdeaPoolContextSql");
+                    options.UseSqlServer(connectionString);
+                }
+                else
+                {
+                    connectionString = configuration.GetConnectionString("IdeaPoolContextInMemory");
 
-            _context = new IdeaPoolContext(options);
-            _context.Database.EnsureCreated();
-            seedData?.Invoke();
+                    var connection = new SqliteConnection(connectionString);
+                    connection.Open();
+
+                    options.UseSqlite(connection);
+                }
+
+                seedData?.Invoke();
+            });
+
+            _services.AddScoped<IUserService, UserService>();
+            _services.AddScoped<ITokenService, TokenService>();
+            _services.AddMediatR(typeof(SignUpUserCommand).GetTypeInfo().Assembly);
+            _services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
+            _services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
         }
     }
 }

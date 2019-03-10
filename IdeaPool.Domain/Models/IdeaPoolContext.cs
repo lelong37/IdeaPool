@@ -1,8 +1,6 @@
 ﻿using System;
-using IdeaPool.Domain.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Options;
 
 namespace IdeaPool.Domain.Models
 {
@@ -47,19 +45,7 @@ namespace IdeaPool.Domain.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.First).HasMaxLength(50);
-
-                entity.Property(e => e.Hash).HasMaxLength(50);
-
-                entity.Property(e => e.Last).HasMaxLength(50);
-
-                //entity.Property(e => e.Password).HasMaxLength(50);
-
-                entity.Property(e => e.Salt).HasMaxLength(50);
+                entity.Property(e => e.Email).IsRequired();
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace IdeaPool.Application.Users.Commands
 {
-    public class AuthenticateUserCommand: IRequest<User>
+    public class LoginUserCommand: IRequest<User>
     {
         public string Email { get; set; }
         public string Password { get; set; }
