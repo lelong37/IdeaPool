@@ -1,13 +1,8 @@
 ﻿#region
 
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IdeaPool.Application.Exceptions;
+using IdeaPool.Application.Users.Commands;
 using IdeaPool.Application.Users.Models;
 using IdeaPool.Domain.Infrastructure;
 using IdeaPool.Domain.Models;
@@ -19,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 
 #endregion
 
-namespace IdeaPool.Application.Users.Commands
+namespace IdeaPool.Application.AcessTokens
 {
     public class RefreshTokenCommandHandler: IRequestHandler<RefreshTokenCommand, Refresh>
     {

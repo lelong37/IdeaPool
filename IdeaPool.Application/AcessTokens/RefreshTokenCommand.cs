@@ -1,12 +1,11 @@
 ﻿#region
 
 using IdeaPool.Application.Users.Models;
-using IdeaPool.Domain.Models;
 using MediatR;
 
 #endregion
 
-namespace IdeaPool.Application.Users.Commands
+namespace IdeaPool.Application.AcessTokens
 {
     public class RefreshTokenCommand: IRequest<Refresh>
     {
